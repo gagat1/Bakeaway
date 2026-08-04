@@ -17,12 +17,41 @@ import {
   calculateCostPerPiece,
   calculateSuggestedPrice,
 } from './utils/calculator';
-import { Calculator, BookOpen, ShoppingBag, Utensils } from 'lucide-react';
+import { Calculator, BookOpen, ShoppingBag, Utensils, LockKeyhole } from 'lucide-react';
+
+const ACCESS_CODE = '071134';
+const ACCESS_STORAGE_KEY = 'bakeaway_access_granted';
 
 export default function App() {
+  const [isAccessGranted, setIsAccessGranted] = useState(() => {
+    try {
+      return localStorage.getItem(ACCESS_STORAGE_KEY) === 'true';
+    } catch {
+      return false;
+    }
+  });
+  const [accessCodeInput, setAccessCodeInput] = useState('');
+  const [accessError, setAccessError] = useState('');
   const [activeTab, setActiveTab] = useState<'calculator' | 'orders'>('calculator');
   const [recipeState, setRecipeState] = useState<RecipeState>(INITIAL_RECIPE);
   const [isSummaryOpen, setIsSummaryOpen] = useState(false);
+
+  const handleAccessSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (accessCodeInput.trim() !== ACCESS_CODE) {
+      setAccessError('Kode akses salah. Coba lagi.');
+      setAccessCodeInput('');
+      return;
+    }
+
+    try {
+      localStorage.setItem(ACCESS_STORAGE_KEY, 'true');
+    } catch {
+      // Continue even if browser storage is unavailable.
+    }
+    setAccessError('');
+    setIsAccessGranted(true);
+  };
 
   // Update recipe title
   const handleUpdateTitle = (title: string) => {
@@ -153,6 +182,63 @@ export default function App() {
   const plannedPriceNum = typeof recipeState.plannedPricePerPiece === 'number'
     ? recipeState.plannedPricePerPiece
     : parseFloat(recipeState.plannedPricePerPiece) || 0;
+
+  if (!isAccessGranted) {
+    return (
+      <main className="min-h-screen bg-[#fafafa] text-[#1a1a1a] flex items-center justify-center px-4 py-8 font-sans">
+        <section className="w-full max-w-sm bg-white border border-[#e3e3e3] rounded-xl shadow-[0_10px_35px_rgba(0,0,0,0.08)] p-6 space-y-6">
+          <div className="text-center space-y-3">
+            <span className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#f1fcf6] border border-[#547e69]/30 text-[#547e69] mx-auto">
+              <LockKeyhole className="w-5 h-5" />
+            </span>
+            <div>
+              <h1 className="text-2xl font-serif text-[#1a1a1a]">
+                Bakeaway Access
+              </h1>
+              <p className="text-sm text-[#6a6a6a] mt-1">
+                Masukkan kode akses untuk membuka dashboard.
+              </p>
+            </div>
+          </div>
+
+          <form onSubmit={handleAccessSubmit} className="space-y-4">
+            <div>
+              <label htmlFor="access-code" className="block text-xs font-semibold uppercase tracking-wider text-[#1a1a1a] mb-2">
+                Kode Akses
+              </label>
+              <input
+                id="access-code"
+                type="password"
+                inputMode="numeric"
+                autoComplete="off"
+                maxLength={6}
+                value={accessCodeInput}
+                onChange={(e) => {
+                  setAccessCodeInput(e.target.value.replace(/\D/g, '').slice(0, 6));
+                  setAccessError('');
+                }}
+                className="w-full px-4 py-3 bg-white border border-[#e3e3e3] rounded-lg text-center text-lg tracking-[0.35em] text-[#1a1a1a] focus:outline-none focus:border-[#547e69] focus:ring-1 focus:ring-[#547e69]"
+                placeholder="000000"
+                autoFocus
+              />
+              {accessError && (
+                <p className="text-xs text-rose-700 mt-2">
+                  {accessError}
+                </p>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-3 bg-[#1a1a1a] text-white hover:bg-[#333333] rounded-lg text-sm font-medium transition-colors cursor-pointer"
+            >
+              Buka Aplikasi
+            </button>
+          </form>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#fafafa] text-[#1a1a1a] flex flex-col font-sans">
@@ -331,4 +417,3 @@ export default function App() {
     </div>
   );
 }
-
