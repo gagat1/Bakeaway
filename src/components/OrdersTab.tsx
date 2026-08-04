@@ -28,7 +28,6 @@ import { Order, OrderProductItem, OrderSource, PaymentStatus, BakingBatch } from
 import { INITIAL_ORDERS, INITIAL_BATCHES } from '../data/defaultOrders';
 import { formatCurrency } from '../utils/calculator';
 import { getSupabaseClient, isSupabaseConfigured } from '../lib/supabase';
-import { SupabaseSyncModal } from './SupabaseSyncModal';
 
 interface OrdersTabProps {
   currencySymbol: string;
@@ -38,8 +37,6 @@ const BATCHES_STORAGE_KEY = 'bakery_batches_v1';
 const ORDERS_STORAGE_KEY = 'bakery_orders_v1';
 
 export const OrdersTab: React.FC<OrdersTabProps> = ({ currencySymbol }) => {
-  // Supabase Modal & Sync state
-  const [isSyncModalOpen, setIsSyncModalOpen] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [hasSupabase, setHasSupabase] = useState(isSupabaseConfigured);
 
@@ -74,7 +71,10 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({ currencySymbol }) => {
   // Fetch data from Supabase if configured
   const loadSupabaseData = useCallback(async () => {
     const supabase = getSupabaseClient();
-    if (!supabase) return;
+    if (!supabase) {
+      setHasSupabase(false);
+      return;
+    }
 
     setIsSyncing(true);
     try {
@@ -120,9 +120,10 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({ currencySymbol }) => {
         }));
         setOrders(formattedOrders);
       }
-      setHasSupabase(true);
+      setHasSupabase(!batchErr && !orderErr);
     } catch (err) {
       console.error('Error fetching Supabase data:', err);
+      setHasSupabase(false);
     } finally {
       setIsSyncing(false);
     }
@@ -534,20 +535,19 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({ currencySymbol }) => {
           </div>
 
           <div className="flex flex-wrap items-center space-x-2 gap-y-2">
-            {/* Supabase Connection Button Badge */}
-            <button
-              onClick={() => setIsSyncModalOpen(true)}
-              className={`inline-flex items-center space-x-1.5 px-3 py-2 rounded-lg text-xs font-medium border transition-all cursor-pointer shadow-sm ${
+            {/* Supabase Connection Indicator */}
+            <div
+              className={`inline-flex items-center space-x-1.5 px-3 py-2 rounded-lg text-xs font-medium border shadow-sm ${
                 hasSupabase
-                  ? 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100'
-                  : 'bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-100'
+                  ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                  : 'bg-amber-50 text-amber-900 border-amber-300'
               }`}
-              title="Database Sync Status"
+              title={hasSupabase ? 'Supabase connected' : 'Supabase not connected'}
             >
               <Database className={`w-3.5 h-3.5 ${hasSupabase ? 'text-emerald-600' : 'text-amber-600'}`} />
-              <span>{hasSupabase ? 'Supabase Connected' : 'Connect Supabase'}</span>
+              <span>{hasSupabase ? 'Supabase Connected' : 'Supabase Offline'}</span>
               {isSyncing && <RefreshCw className="w-3 h-3 animate-spin ml-1" />}
-            </button>
+            </div>
 
             <button
               onClick={handleOpenNewBatchForm}
@@ -1368,16 +1368,6 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({ currencySymbol }) => {
           })}
         </div>
       )}
-
-      {/* Supabase Connection & Sync Modal */}
-      <SupabaseSyncModal
-        isOpen={isSyncModalOpen}
-        onClose={() => setIsSyncModalOpen(false)}
-        onConnected={() => {
-          setHasSupabase(true);
-          loadSupabaseData();
-        }}
-      />
 
     </div>
   );
