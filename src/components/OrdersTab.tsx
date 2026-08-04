@@ -1047,44 +1047,44 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({ currencySymbol }) => {
 
           {/* Products List Section */}
           <div className="pt-3 border-t border-[#e3e3e3] space-y-3">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <label className="text-xs font-semibold uppercase tracking-wider text-[#1a1a1a]">
                 Products Ordered
               </label>
               <button
                 type="button"
                 onClick={handleAddProductLine}
-                className="inline-flex items-center space-x-1 text-xs text-[#547e69] font-medium hover:underline cursor-pointer"
+                className="inline-flex items-center justify-center sm:justify-start space-x-1 rounded-lg border border-[#547e69]/30 bg-[#f1fcf6] px-3 py-2 text-xs text-[#547e69] font-medium hover:bg-[#e3f8eb] cursor-pointer w-full sm:w-auto"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Product Item</span>
               </button>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-3">
               {formProducts.map((p, idx) => (
-                <div key={p.id || idx} className="flex items-center space-x-2">
+                <div key={p.id || idx} className="grid grid-cols-[5rem_minmax(0,1fr)] sm:grid-cols-[minmax(0,1fr)_5rem_8rem_auto] gap-2 items-center">
                   <input
                     type="text"
                     required
                     value={p.name}
                     onChange={(e) => handleUpdateProductLine(idx, 'name', e.target.value)}
                     placeholder="Product name (e.g. Sourdough Loaf)"
-                    className="flex-1 px-3 py-1.5 bg-white border border-[#e3e3e3] rounded-lg text-sm text-[#1a1a1a] focus:outline-none focus:border-[#547e69]"
+                    className="col-span-2 sm:col-span-1 w-full min-w-0 px-3 py-2 bg-white border border-[#e3e3e3] rounded-lg text-sm text-[#1a1a1a] focus:outline-none focus:border-[#547e69]"
                   />
 
-                  <div className="w-20">
+                  <div className="w-full">
                     <input
                       type="number"
                       min="1"
                       value={p.quantity}
                       onChange={(e) => handleUpdateProductLine(idx, 'quantity', e.target.value)}
                       placeholder="Qty"
-                      className="w-full px-2 py-1.5 bg-white border border-[#e3e3e3] rounded-lg text-sm text-center text-[#1a1a1a] focus:outline-none focus:border-[#547e69]"
+                      className="w-full px-2 py-2 bg-white border border-[#e3e3e3] rounded-lg text-sm text-center text-[#1a1a1a] focus:outline-none focus:border-[#547e69]"
                     />
                   </div>
 
-                  <div className="w-32 relative flex items-center">
+                  <div className="relative flex items-center w-full">
                     <span className="absolute left-2 text-xs text-[#6a6a6a]">
                       {currencySymbol}
                     </span>
@@ -1095,7 +1095,7 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({ currencySymbol }) => {
                       value={p.unitPrice}
                       onChange={(e) => handleUpdateProductLine(idx, 'unitPrice', e.target.value)}
                       placeholder="Price"
-                      className="w-full pl-8 pr-2 py-1.5 bg-white border border-[#e3e3e3] rounded-lg text-sm text-[#1a1a1a] focus:outline-none focus:border-[#547e69]"
+                      className="w-full pl-8 pr-2 py-2 bg-white border border-[#e3e3e3] rounded-lg text-sm text-[#1a1a1a] focus:outline-none focus:border-[#547e69]"
                     />
                   </div>
 
@@ -1103,7 +1103,8 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({ currencySymbol }) => {
                     <button
                       type="button"
                       onClick={() => handleRemoveProductLine(idx)}
-                      className="p-1.5 text-[#8d8d8d] hover:text-rose-600 cursor-pointer"
+                      className="justify-self-end p-2 text-[#8d8d8d] hover:text-rose-600 hover:bg-rose-50 rounded-lg cursor-pointer"
+                      title="Remove product item"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
