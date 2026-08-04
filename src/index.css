@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-ink-black: #1a1a1a;
+    --color-paper-white: #ffffff;
+    --color-graphite: #6a6a6a;
+    --color-warm-charcoal: #4d3f32;
+    --color-fog: #f6f6f6;
+    --color-linen: #ececec;
+    --color-hairline: #e3e3e3;
+    --color-sage: #547e69;
+    --color-mint-wash: #f1fcf6;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--color-ink-black);
+    background-color: #ffffff;
+  }
+
+  h1, h2, h3, .font-serif-editorial {
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-weight: 300;
+  }
+}
+
+.font-serif {
+  font-family: 'Crimson Pro', Georgia, serif;
+}
+
+.font-sans {
+  font-family: 'Inter', system-ui, sans-serif;
+}
+

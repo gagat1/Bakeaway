@@ -1,0 +1,6 @@
+{
+  "name": "Bakery COGS Calculator",
+  "description": "A minimalist scratchpad calculator for home bakers to calculate ingredient costs (COGS), batch yield, and target profit margins.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
